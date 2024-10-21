@@ -7,7 +7,7 @@ Una librería para interactuar con la API de Modrinth, permitiendo la búsqueda,
 Para instalar la librería, primero asegúrate de tener [Node.js](https://nodejs.org/) instalado. Luego, puedes clonar este repositorio o instalarlo a través de npm:
 
 ```bash
-npm install modrinth-api
+npm install modrinth-api-lib
 ```
 ## Uso
 Primero, importa la librería en tu archivo JavaScript:
