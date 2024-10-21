@@ -24,6 +24,9 @@ modrinth.download('create', '1.18.2', './mods');
 
 // Actualizar todos los mods en la carpeta
 modrinth.update('./mods', '1.18.2');
+
+// Conseguir la información de un mod
+modrinth.getinfo('create')
 ```
 ## Mods.json
 al descargar un mod la libreria hace un archivo .json la cual es un registro de cuales mods estan instalados, esto sirve para que el actualizador pueda funcionar.
