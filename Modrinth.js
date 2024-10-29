@@ -7,11 +7,28 @@ class ModrinthAPI {
         this.modsDataFile = modsDataFile;
     }
 
+    static async getinfo(modName) {
+        try {
+            const response = await axios.get(`https://api.modrinth.com/v2/search`, {
+                params: { query: modName, limit: 10 },
+            });
+            const mods = response.data.hits;
+            if (mods.length === 0) {
+                throw new Error(`Mod ${modName} no encontrado.`);
+            }
+            const modInfo = mods[0];
+            console.log('Información del mod:', modInfo);
+            return modInfo;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     setModFile(modsDataFile) {
         this.modsDataFile = modsDataFile;
     }
 
-    async getmod(modName, gameVersionOrModVersion) {
+    async getmod(modName, gameVersionOrModVersion, loader) {
         try {
             const mods = await this.searchMods(modName);
             if (mods.length === 0) {
@@ -25,11 +42,14 @@ class ModrinthAPI {
             if (this.isSpecificModVersion(gameVersionOrModVersion)) {
                 compatibleVersions = versions.filter(version => version.version_number === gameVersionOrModVersion);
             } else {
-                compatibleVersions = versions.filter(version => version.game_versions.includes(gameVersionOrModVersion));
+                compatibleVersions = versions.filter(version => 
+                    version.game_versions.includes(gameVersionOrModVersion) &&
+                    version.loaders.includes(loader) // Filtra por el cargador
+                );
             }
 
             if (compatibleVersions.length === 0) {
-                throw new Error(`No hay versiones compatibles de ${modName} con ${gameVersionOrModVersion}.`);
+                throw new Error(`No hay versiones compatibles de ${modName} con ${gameVersionOrModVersion} y cargador ${loader}.`);
             }
 
             return compatibleVersions;
@@ -38,9 +58,9 @@ class ModrinthAPI {
         }
     }
 
-    async download(modName, gameVersionOrModVersion, minecraftModsFolder = './mods') {
+    async download(modName, gameVersionOrModVersion, loader, minecraftModsFolder = './mods') {
         try {
-            const versions = await this.getmod(modName, gameVersionOrModVersion);
+            const versions = await this.getmod(modName, gameVersionOrModVersion, loader);
             const latestVersion = versions[0];
 
             await this.installMod(latestVersion.id, minecraftModsFolder);
@@ -71,7 +91,7 @@ class ModrinthAPI {
 
             for (const modName in modsData) {
                 const installedVersion = modsData[modName];
-                const versions = await this.getmod(modName, gameVersion);
+                const versions = await this.getmod(modName, gameVersion, 'forge'); // Cambia el loader según sea necesario
                 const latestVersion = versions[0];
 
                 if (latestVersion.version_number !== installedVersion) {
