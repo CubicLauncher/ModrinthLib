@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Class to interact with the Modrinth API for Minecraft mod management.
+ * Class to interact with the Modrinth API for Minecraft mod management. :)
  * This class allows searching for mods, retrieving specific mod versions,
  * downloading and installing mods, and updating mods based on compatibility.
  */
